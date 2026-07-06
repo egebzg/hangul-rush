@@ -1,4 +1,32 @@
-// ============ İSTATİSTİK (localStorage) ============
+// ============ DİL (i18n) ============
+const LANG_KEY = 'hangul-quiz-lang';
+let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+
+function t(key, vars) {
+  let str = (UI_STRINGS[currentLang] && UI_STRINGS[currentLang][key]) || UI_STRINGS.tr[key] || key;
+  if (vars) {
+    Object.entries(vars).forEach(([k, v]) => { str = str.replace('{' + k + '}', v); });
+  }
+  return str;
+}
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem(LANG_KEY, lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang)
+  );
+}
+
+document.getElementById('lang-switch').addEventListener('click', e => {
+  const btn = e.target.closest('.lang-btn');
+  if (btn) applyLanguage(btn.dataset.lang);
+});
+
 // ============ SES (Web Speech API) ============
 let koreanVoice = null;
 
@@ -22,6 +50,8 @@ function speakKorean(text) {
   utter.rate = 0.8;
   speechSynthesis.speak(utter);
 }
+
+// ============ İSTATİSTİK (localStorage) ============
 const STORAGE_KEY = 'hangul-quiz-stats-v1';
 
 function loadStats() {
@@ -36,7 +66,7 @@ function loadStats() {
 function saveStats(stats) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-  } catch (e) { /* gizli mod vs. — sessizce geç */ }
+  } catch (e) { /* gizli mod vs. */ }
 }
 
 function recordAnswer(stats, char, correct) {
@@ -55,9 +85,6 @@ function computeOverview(stats) {
   Object.values(stats.letters).forEach(l => { correct += l.correct; wrong += l.wrong; });
   const attempts = correct + wrong;
   const accuracy = attempts ? Math.round((correct / attempts) * 100) : null;
-
-  // En az 2 kez denenmiş ve en az 1 yanlışı olan harfler,
-  // yanlış oranına göre sıralı, ilk 5'i
   const weakest = Object.entries(stats.letters)
     .map(([char, v]) => ({
       char,
@@ -68,7 +95,6 @@ function computeOverview(stats) {
     .filter(w => w.attempts >= 2 && w.wrong > 0)
     .sort((a, b) => b.ratio - a.ratio || b.wrong - a.wrong)
     .slice(0, 5);
-
   return { accuracy, quizzesTaken: stats.history.length, weakest };
 }
 
@@ -106,6 +132,7 @@ const statAccuracyEl = document.getElementById('stat-accuracy');
 const statCountEl = document.getElementById('stat-count');
 const weakChipsEl = document.getElementById('weak-chips');
 const categoryChipsEl = document.getElementById('category-chips');
+const difficultyChipsEl = document.getElementById('difficulty-chips');
 const lengthChipsEl = document.getElementById('length-chips');
 const setupErrorEl = document.getElementById('setup-error');
 const startBtn = document.getElementById('start-btn');
@@ -124,6 +151,7 @@ const missedBlockEl = document.getElementById('missed-block');
 const missedChipsEl = document.getElementById('missed-chips');
 const resultsHomeBtn = document.getElementById('results-home-btn');
 const retryBtn = document.getElementById('retry-btn');
+const speakBtn = document.getElementById('speak-btn');
 
 // ============ EKRAN GEÇİŞİ ============
 function switchScreen(name) {
@@ -145,7 +173,7 @@ function renderStatsOverview() {
   if (ov.weakest.length === 0) {
     const span = document.createElement('span');
     span.className = 'weak-chip';
-    span.textContent = 'Henüz belirgin bir zorluk yok';
+    span.textContent = t('noWeakYet');
     weakChipsEl.appendChild(span);
   } else {
     ov.weakest.forEach(w => {
@@ -167,17 +195,16 @@ categoryChipsEl.querySelectorAll('.chip').forEach(chip => {
     setupErrorEl.classList.add('hidden');
   });
 });
-const difficultyChipsEl = document.getElementById('difficulty-chips');
 
+// Zorluk seçimi
 difficultyChipsEl.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
     difficultyChipsEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
 
     const diff = chip.dataset.diff;
-    if (diff === 'custom') return; // kategori seçimini elle yapsın
+    if (diff === 'custom') return;
 
-    // Zorluk seçilince kategorileri otomatik işaretle
     const level = DIFFICULTY_LEVELS[diff];
     state.selectedCats.clear();
     categoryChipsEl.querySelectorAll('.chip').forEach(catChip => {
@@ -188,6 +215,7 @@ difficultyChipsEl.querySelectorAll('.chip').forEach(chip => {
     setupErrorEl.classList.add('hidden');
   });
 });
+
 // Soru sayısı (tekli seçim)
 lengthChipsEl.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
@@ -196,7 +224,7 @@ lengthChipsEl.querySelectorAll('.chip').forEach(chip => {
     state.length = chip.dataset.len;
   });
 });
-lengthChipsEl.querySelector('[data-len="20"]').classList.add('active'); // varsayılan
+lengthChipsEl.querySelector('[data-len="20"]').classList.add('active');
 
 startBtn.addEventListener('click', () => {
   if (state.selectedCats.size === 0) {
@@ -227,14 +255,13 @@ function buildPoolAndStart() {
 
 function renderQuestion() {
   state.answered = false;
-  progressLabelEl.textContent = `Soru ${state.idx + 1} / ${state.queue.length}`;
-  scoreLabelEl.textContent = `Skor: ${state.score}`;
+  progressLabelEl.textContent = t('progress', { i: state.idx + 1, n: state.queue.length });
+  scoreLabelEl.textContent = t('score', { s: state.score });
   progressFillEl.style.width = (state.idx / state.queue.length * 100) + '%';
 
   const [char, correct] = state.queue[state.idx];
   letterCharEl.textContent = char;
 
-  // 3 yanlış seçenek: havuzdan doğru cevap dışındakileri karıştırıp ilk 3'ü al
   const distractSource = state.pool.filter(p => p[1] !== correct);
   const distractors = shuffle(distractSource).slice(0, 3).map(p => p[1]);
   const options = shuffle([correct, ...distractors]);
@@ -268,24 +295,24 @@ function checkAnswer(btn, chosen, correct, char) {
   if (isCorrect) {
     state.score++;
     btn.classList.add('correct');
-    feedbackEl.textContent = 'Doğru!';
+    feedbackEl.textContent = t('correct');
     feedbackEl.classList.add('correct');
   } else {
     btn.classList.add('wrong');
     const correctBtn = buttons.find(b => b.textContent === correct);
     if (correctBtn) correctBtn.classList.add('correct');
-    feedbackEl.textContent = `Yanlış, doğrusu: ${correct}`;
+    feedbackEl.textContent = t('wrong', { a: correct });
     feedbackEl.classList.add('wrong');
     state.sessionMissed[char] = correct;
   }
 
-  scoreLabelEl.textContent = `Skor: ${state.score}`;
+  scoreLabelEl.textContent = t('score', { s: state.score });
+
+  const item = state.queue[state.idx];
+  speakKorean(item[2] || item[0]);
+
   nextBtn.classList.remove('hidden');
-// checkAnswer fonksiyonunun sonuna, nextBtn.focus() satırından önce:
-speakKorean(char);  
-const item = state.queue[state.idx];
-  speakKorean(item[2] || item[0]);  
-nextBtn.focus();
+  nextBtn.focus();
 }
 
 nextBtn.addEventListener('click', () => {
@@ -302,14 +329,14 @@ function finishQuiz() {
   switchScreen('results');
   const pct = Math.round((state.score / state.queue.length) * 100);
   let title;
-  if (pct >= 90) title = 'Harika iş!';
-  else if (pct >= 70) title = 'İyi gidiyorsun';
-  else if (pct >= 50) title = 'Fena değil';
-  else title = 'Biraz daha pratik lazım';
+  if (pct >= 90) title = t('title90');
+  else if (pct >= 70) title = t('title70');
+  else if (pct >= 50) title = t('title50');
+  else title = t('title0');
 
   resultsTitleEl.textContent = title;
   resultsScoreEl.textContent = pct + '%';
-  resultsDetailEl.textContent = `${state.score} / ${state.queue.length} doğru`;
+  resultsDetailEl.textContent = t('resultDetail', { s: state.score, n: state.queue.length });
 
   const missedEntries = Object.entries(state.sessionMissed);
   if (missedEntries.length) {
@@ -318,7 +345,7 @@ function finishQuiz() {
     missedEntries.forEach(([char, correct]) => {
       const span = document.createElement('span');
       span.className = 'weak-chip';
-      span.textContent = `${char} → ${correct}`;
+      span.textContent = char + ' → ' + correct;
       missedChipsEl.appendChild(span);
     });
   } else {
@@ -329,6 +356,12 @@ function finishQuiz() {
 homeBtn.addEventListener('click', () => { switchScreen('home'); renderStatsOverview(); });
 resultsHomeBtn.addEventListener('click', () => { switchScreen('home'); renderStatsOverview(); });
 retryBtn.addEventListener('click', buildPoolAndStart);
+
+speakBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const item = state.queue[state.idx];
+  speakKorean(item[2] || item[0]);
+});
 
 // ============ KLAVYE KISAYOLLARI ============
 document.addEventListener('keydown', e => {
@@ -343,17 +376,5 @@ document.addEventListener('keydown', e => {
 });
 
 // ============ BAŞLANGIÇ ============
+applyLanguage(currentLang);
 renderStatsOverview();
-function speakKorean(text) {
-  if (!('speechSynthesis' in window)) return; // desteklemiyorsa sessizce geç
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'ko-KR';
-  utter.rate = 0.8; // biraz yavaş, öğrenme için daha iyi
-  speechSynthesis.cancel(); // önceki ses bitmeden yenisi çakışmasın
-  speechSynthesis.speak(utter);
-}
-document.getElementById('speak-btn').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const item = state.queue[state.idx];
-  speakKorean(item[2] || item[0]);
-});

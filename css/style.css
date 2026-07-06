@@ -206,3 +206,20 @@ body {
 }
 .speak-btn:hover { opacity: 1; }
 .letter-card { position: relative; }
+.lang-switch { display: flex; gap: 6px; margin: 10px 0 1.5rem; }
+.lang-btn {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(237, 231, 217, 0.2);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.lang-btn.active {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: #16181D;
+}
