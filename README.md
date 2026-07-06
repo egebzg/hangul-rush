@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="Hangul Rush Logo" width="240">
+  <img src="./assets/logo.png" alt="Hangul Rush Logo" width="240">
 </p>
 
 <h1 align="center">Hangul Rush</h1>
