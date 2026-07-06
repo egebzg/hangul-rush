@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="936" height="242" alt="image" src="https://github.com/user-attachments/assets/8d378d32-3b91-4d12-b0c8-8bfff16839f0" />
+  <img width="936" height="242" alt="image" src="file:///C:/Users/USER/Desktop/Hangul%20Rush.v1/assets/logo.png" />
 
 </p>
 
