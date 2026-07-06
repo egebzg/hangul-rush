@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한글 퀴즈 — Hangul rush</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ANA SAYFA -->
+  <section id="screen-home" class="screen">
+    <header class="site-header">
+      <h1 class="site-title kr">한글 퀴즈</h1>
+      <p class="site-subtitle">Hangul karakterlerini tanimayi öğren</p>
+    </header>
+
+    <div id="stats-overview" class="stats-overview hidden">
+      <div class="stat-card">
+        <span class="stat-label">Doğruluk</span>
+        <span class="stat-value" id="stat-accuracy">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Tamamlanan quiz</span>
+        <span class="stat-value" id="stat-count">—</span>
+      </div>
+      <div class="stat-card stat-card--wide">
+        <span class="stat-label">En çok zorlandiklarin</span>
+        <div class="weak-chips" id="weak-chips"></div>
+      </div>
+    </div>
+<h2 class="section-label">Zorluk</h2>
+<div class="chip-group" id="difficulty-chips">
+  <button type="button" class="chip" data-diff="basic">Temel</button>
+  <button type="button" class="chip" data-diff="intermediate">Orta</button>
+  <button type="button" class="chip" data-diff="advanced">İleri</button>
+  <button type="button" class="chip active" data-diff="custom">Kendim seçeyim</button>
+</div>
+    <h2 class="section-label">Kategori seç</h2>
+    <div class="chip-group" id="category-chips">
+      <button type="button" class="chip" data-cat="consonants">Ünsüzler</button>
+      <button type="button" class="chip" data-cat="vowels">Sesli harfler</button>
+      <button type="button" class="chip" data-cat="doubles">Çift ünsüzler</button>
+      <button type="button" class="chip" data-cat="diphthongs">İkili sesliler</button>
+    </div>
+
+    <h2 class="section-label">Soru sayısı</h2>
+    <div class="chip-group" id="length-chips">
+      <button type="button" class="chip" data-len="10">10</button>
+      <button type="button" class="chip" data-len="20">20</button>
+      <button type="button" class="chip" data-len="all">Tümü</button>
+    </div>
+
+    <p class="setup-error hidden" id="setup-error">En az bir kategori seç.</p>
+    <button type="button" class="btn btn-primary btn-start" id="start-btn">Quize başla →</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="screen-quiz" class="screen hidden">
+    <div class="quiz-topbar">
+      <button type="button" class="btn btn-ghost" id="home-btn">← Ana sayfa</button>
+      <span id="progress-label"></span>
+      <span class="quiz-score-label" id="score-label"></span>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="letter-card" id="letter-card">
+      <span class="letter-char kr" id="letter-char"></span>
+    <button type="button" class="speak-btn audio-only hidden" id="speak-btn" aria-label="Sesi dinle">🔊</button>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+
+    <div class="next-row">
+      <button type="button" class="btn btn-primary hidden" id="next-btn">Sonraki →</button>
+    </div>
+  </section>
+
+  <!-- SONUÇ -->
+  <section id="screen-results" class="screen hidden">
+    <div class="results-card">
+      <p class="results-title" id="results-title"></p>
+      <p class="results-score" id="results-score"></p>
+      <p class="results-detail" id="results-detail"></p>
+
+      <div class="missed-block hidden" id="missed-block">
+        <h3 class="section-label">Bu quizde yanliş yaptıkların</h3>
+        <div class="weak-chips" id="missed-chips"></div>
+      </div>
+
+      <div class="results-actions">
+        <button type="button" class="btn btn-ghost" id="results-home-btn">Ana sayfa</button>
+        <button type="button" class="btn btn-primary" id="retry-btn">Tekrar dene ↻</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
