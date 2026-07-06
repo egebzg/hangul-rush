@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/logo.PNG" alt="Hangul Rush Logo" width="240">
+  ![Hangul Rush screenshot](./assets/logo.jpg)
 
 </p>
 
