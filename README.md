@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="./assets/logo.png" alt="Hangul Rush Logo" width="240">
+  <img width="936" height="242" alt="image" src="https://github.com/user-attachments/assets/8d378d32-3b91-4d12-b0c8-8bfff16839f0" />
+
 </p>
 
 <h1 align="center">Hangul Rush</h1>
