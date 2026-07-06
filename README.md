@@ -4,7 +4,7 @@ An interactive quiz app for learning to recognize Hangul (the Korean alphabet), 
 
 **Live demo:** https://egebzg.github.io/hangul-rush/
 
-![Hangul Rush screenshot](screenshot.png)
+![Hangul Rush screenshot](screenshot.jpeg)
 
 ## Features
 
