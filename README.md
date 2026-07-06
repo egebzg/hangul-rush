@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/logo.png" alt="Hangul Rush Logo" width="240">
+  <img src="./logo.png" alt="Hangul Rush Logo" width="240">
 </p>
 
 <h1 align="center">Hangul Rush</h1>
@@ -13,7 +13,7 @@ An interactive quiz app for learning to recognize Hangul (the Korean alphabet), 
 
 **Live demo:** https://egebzg.github.io/hangul-rush/
 
-![Hangul Rush screenshot](screenshot.jpeg)
+![Hangul Rush screenshot](./screenshot.jpeg)
 
 ## Features
 
