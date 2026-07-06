@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="./assets/logo.png" alt="Hangul Rush Logo" width="240">
+</p>
+
+<h1 align="center">Hangul Rush</h1>
+
+<p align="center">
+  A fast and clean Korean alphabet quiz app.
+</p>
 # 한글 퀴즈 — Hangul Rush
 
 An interactive quiz app for learning to recognize Hangul (the Korean alphabet), with a multilingual interface, audio pronunciation, and persistent progress tracking.
